@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Chef Dashboard - Kitchen Manager{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Chef Dashboard</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card card-lg bg-primary text-white">
+            <div class="card-body text-center">
+                <h3>{{ total_ingredients }}</h3>
+                <p class="mb-0">Total Ingredients</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-lg {% if low_stock_count > 0 %}bg-danger{% else %}bg-success{% endif %} text-white">
+            <div class="card-body text-center">
+                <h3>{{ low_stock_count }}</h3>
+                <p class="mb-0">Low Stock Items</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-lg bg-info text-white">
+            <div class="card-body text-center">
+                <h3>{{ active_meals.count }}</h3>
+                <p class="mb-0">Scheduled Meals</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Quick Actions</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'ingredient_create' %}" class="btn btn-primary btn-lg-custom w-100">Add Ingredient</a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'meal_plan_create' %}" class="btn btn-success btn-lg-custom w-100">Create Meal Plan</a>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <a href="{% url 'generate_shopping_list' %}" class="btn btn-warning btn-lg-custom w-100">Generate Shopping List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if active_meals %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4>Upcoming Scheduled Meals</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for schedule in active_meals %}
+                    <li class="list-group-item">
+                        <strong>{{ schedule.meal_plan.name }}</strong> - {{ schedule.scheduled_date }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

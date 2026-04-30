@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Kitchen Manager{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <h1 class="text-center mb-4">Kitchen Manager</h1>
+                <h3 class="text-center mb-4">Create Account</h3>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="role" value="{{ form.role.initial }}">
+
+                    <div class="mb-4">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control form-control-lg" id="username" name="username" required autofocus>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control form-control-lg" id="email" name="email" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password1" class="form-label">Password</label>
+                        <input type="password" class="form-control form-control-lg" id="password1" name="password1" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control form-control-lg" id="password2" name="password2" required>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Role:</strong> {{ form.role.initial|capfirst }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg-custom w-100">Create Account</button>
+                </form>
+
+                <hr class="my-4">
+                <p class="text-center mb-0">
+                    Already have an account?
+                    <a href="{% url 'login' %}">Login here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

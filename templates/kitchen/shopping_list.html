@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Shopping List - Kitchen Manager{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Shopping List</h1>
+    <a href="{% url 'shopping_item_create' %}" class="btn btn-primary btn-lg-custom">Add Item</a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr class="{% if item.status == 'pending' %}table-warning{% elif item.status == 'purchased' %}table-success{% elif item.status == 'unavailable' or item.status == 'out_of_budget' %}table-danger{% endif %}">
+                        <td><strong>{{ item.name }}</strong></td>
+                        <td>{{ item.quantity_needed }} {{ item.unit }}</td>
+                        <td>
+                            {% if item.is_manual %}
+                            <span class="badge bg-info">Manual</span>
+                            {% else %}
+                            <span class="badge bg-primary">From Meal Plan</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if item.status == 'pending' %}warning{% elif item.status == 'purchased' %}success{% else %}danger{% endif %}">
+                                {{ item.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <form method="post" action="{% url 'shopping_item_update_status' item.pk %}" class="d-inline">
+                                {% csrf_token %}
+                                <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                    {% for value, label in item.Status.choices %}
+                                    <option value="{{ value }}" {% if item.status == value %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                            <form method="post" action="{% url 'shopping_item_delete' item.pk %}" class="d-inline ms-2">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this item?')">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center">Shopping list is empty. Add items manually or generate from meal plans.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

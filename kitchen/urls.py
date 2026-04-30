@@ -22,6 +22,7 @@ urlpatterns = [
     path('meal-plans/', views.meal_plan_list, name='meal_plan_list'),
     path('meal-plans/new/', views.meal_plan_create, name='meal_plan_create'),
     path('meal-plans/<int:pk>/ingredients/', views.meal_plan_ingredients, name='meal_plan_ingredients'),
+    path('meal-ingredients/<int:pk>/delete/', views.delete_meal_ingredient, name='delete_meal_ingredient'),
 
     # Shopping List (Buyer only)
     path('shopping-list/', views.shopping_list, name='shopping_list'),

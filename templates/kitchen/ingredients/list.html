@@ -5,7 +5,7 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Ingredients</h1>
-    <a href="{% url 'ingredient_create' %}" class="btn btn-primary btn-lg-custom">Add New Ingredient</a>
+    <a href="{% url 'kitchen:ingredient_create' %}" class="btn btn-primary btn-lg-custom">Add New Ingredient</a>
 </div>
 
 <div class="card">
@@ -37,8 +37,8 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{% url 'ingredient_update' ingredient.pk %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
-                            <a href="{% url 'stock_update' ingredient.pk %}" class="btn btn-sm btn-outline-success">Update Stock</a>
+                            <a href="{% url 'kitchen:ingredient_update' ingredient.pk %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                            <a href="{% url 'kitchen:stock_update' ingredient.pk %}" class="btn btn-sm btn-outline-success">Update Stock</a>
                         </td>
                     </tr>
                     {% empty %}

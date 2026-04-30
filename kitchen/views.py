@@ -2,11 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
-from django.db.models import Sum, F
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
+from django.db.models import F
 from django.utils import timezone
-from .models import User, Ingredient, MealPlan, MealIngredient, ShoppingListItem, StockUpdate, ActiveMealSchedule
+from .models import User, Ingredient, MealPlan, ShoppingListItem, ActiveMealSchedule
 from .forms import (
     ChefRegistrationForm, BuyerRegistrationForm, IngredientForm,
     MealPlanForm, MealIngredientForm, StockUpdateForm,
@@ -25,7 +23,7 @@ def is_buyer(user):
 def register(request):
     """Registration view with role selection"""
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('kitchen:dashboard')
 
     if request.method == 'POST':
         role = request.POST.get('role')
@@ -38,7 +36,7 @@ def register(request):
             user = form.save()
             login(request, user)
             messages.success(request, f'Welcome! You are registered as a {user.get_role_display()}.')
-            return redirect('dashboard')
+            return redirect('kitchen:dashboard')
     else:
         form = ChefRegistrationForm()
 
@@ -48,7 +46,7 @@ def register(request):
 def login_view(request):
     """Custom login view"""
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('kitchen:dashboard')
 
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -58,7 +56,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             messages.success(request, f'Welcome back, {user.username}!')
-            return redirect('dashboard')
+            return redirect('kitchen:dashboard')
         else:
             messages.error(request, 'Invalid username or password.')
 
@@ -69,7 +67,7 @@ def logout_view(request):
     """Logout view"""
     logout(request)
     messages.info(request, 'You have been logged out.')
-    return redirect('login')
+    return redirect('kitchen:login')
 
 
 @login_required
@@ -85,7 +83,6 @@ def dashboard(request):
 @user_passes_test(is_chef)
 def chef_dashboard(request):
     """Chef-specific dashboard"""
-    low_stock = Ingredient.objects.filter(current_stock__lte=F('minimum_stock'))
     active_meals = ActiveMealSchedule.objects.filter(scheduled_date__gte=timezone.now().date())[:5]
 
     context = {
@@ -128,7 +125,7 @@ def ingredient_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Ingredient created successfully!')
-            return redirect('ingredient_list')
+            return redirect('kitchen:ingredient_list')
     else:
         form = IngredientForm()
     return render(request, 'kitchen/ingredients/form.html', {'form': form, 'title': 'Add Ingredient'})
@@ -144,7 +141,7 @@ def ingredient_update(request, pk):
         if form.is_valid():
             form.save()
             messages.success(request, 'Ingredient updated successfully!')
-            return redirect('ingredient_list')
+            return redirect('kitchen:ingredient_list')
     else:
         form = IngredientForm(instance=ingredient)
     return render(request, 'kitchen/ingredients/form.html', {'form': form, 'title': 'Edit Ingredient'})
@@ -173,7 +170,7 @@ def stock_update(request, pk):
             ingredient.save()
 
             messages.success(request, f'Stock updated! New amount: {update.new_stock} {ingredient.unit}')
-            return redirect('ingredient_list')
+            return redirect('kitchen:ingredient_list')
     else:
         form = StockUpdateForm()
 
@@ -204,7 +201,7 @@ def shopping_item_create(request):
             item.status = ShoppingListItem.Status.PENDING
             item.save()
             messages.success(request, 'Item added to shopping list!')
-            return redirect('shopping_list')
+            return redirect('kitchen:shopping_list')
     else:
         form = ShoppingListItemForm()
     return render(request, 'kitchen/shopping_item_form.html', {'form': form})
@@ -227,7 +224,7 @@ def shopping_item_update_status(request, pk):
             else:
                 messages.success(request, f'{item.name} marked as {item.get_status_display()}')
 
-    return redirect('shopping_list')
+    return redirect('kitchen:shopping_list')
 
 
 @login_required
@@ -241,7 +238,7 @@ def shopping_item_delete(request, pk):
         item.delete()
         messages.success(request, f'{item_name} removed from shopping list.')
 
-    return redirect('shopping_list')
+    return redirect('kitchen:shopping_list')
 
 
 @login_required
@@ -317,7 +314,7 @@ def generate_shopping_list(request):
                 )
 
         messages.success(request, 'Shopping list generated based on meal plans!')
-        return redirect('shopping_list')
+        return redirect('kitchen:shopping_list')
 
     return render(request, 'kitchen/generate_shopping.html')
 
@@ -339,7 +336,7 @@ def meal_plan_create(request):
         if form.is_valid():
             meal_plan = form.save()
             messages.success(request, 'Meal plan created!')
-            return redirect('meal_plan_ingredients', pk=meal_plan.pk)
+            return redirect('kitchen:meal_plan_ingredients', pk=meal_plan.pk)
     else:
         form = MealPlanForm()
     return render(request, 'kitchen/meal_plans/form.html', {'form': form, 'title': 'Add Meal Plan'})
@@ -359,7 +356,7 @@ def meal_plan_ingredients(request, pk):
             meal_ing.meal_plan = meal_plan
             meal_ing.save()
             messages.success(request, 'Ingredient added to meal plan!')
-            return redirect('meal_plan_ingredients', pk=pk)
+            return redirect('kitchen:meal_plan_ingredients', pk=pk)
     else:
         form = MealIngredientForm()
 
@@ -369,6 +366,19 @@ def meal_plan_ingredients(request, pk):
         'form': form
     })
 
+@login_required
+@user_passes_test(is_chef)
+def delete_meal_ingredient(request, pk):
+    """Remove an ingredient from a meal plan"""
+    meal_ingredient = get_object_or_404(MealIngredient, pk=pk)
+    meal_plan = meal_ingredient.meal_plan
+
+    if request.method == 'POST':
+        ingredient_name = meal_ingredient.ingredient.name
+        meal_ingredient.delete()
+        messages.success(request, f'{ingredient_name} removed from {meal_plan.name}.')
+
+    return redirect('kitchen:meal_plan_ingredients', pk=meal_plan.pk)
 
 @login_required
 @user_passes_test(is_chef)
@@ -379,7 +389,7 @@ def schedule_meal(request):
         if form.is_valid():
             schedule = form.save()
             messages.success(request, f'{schedule.meal_plan.name} scheduled for {schedule.scheduled_date}!')
-            return redirect('dashboard')
+            return redirect('kitchen:dashboard')
     else:
         form = ActiveMealScheduleForm()
 

@@ -7,10 +7,9 @@ from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.db.models import F, Q
+from django.db.models import F
 from .models import (
-    User, Ingredient, MealPlan, MealIngredient,
-    ShoppingListItem, StockUpdate, ActiveMealSchedule
+    Ingredient, ShoppingListItem, StockUpdate, ActiveMealSchedule
 )
 
 logger = logging.getLogger(__name__)

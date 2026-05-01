@@ -300,6 +300,102 @@ def generate_shopping_list(request):
 
 
 @login_required
+@user_passes_test(is_buyer)
+def export_shopping_list(request):
+    """Export shopping list as a text file"""
+    items = ShoppingListItem.objects.filter(status=ShoppingListItem.Status.PENDING)
+
+    if not items.exists():
+        messages.warning(request, "No pending items to export.")
+        return redirect('kitchen:shopping_list')
+
+    # Create response
+    response = HttpResponse(content_type='text/plain')
+    filename = f"shopping_list_{timezone.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    # Build content
+    lines = ["KITCHEN SHOPPING LIST", "=" * 40, ""]
+    lines.append(f"Generated: {timezone.now().strftime('%Y-%m-%d %H:%M')}")
+    lines.append("")
+
+    for item in items:
+        source = "Manual" if item.is_manual else "Meal Plan"
+        lines.append(f"[ ] {item.quantity_needed} {item.unit} {item.name} ({source})")
+        if item.notes:
+            lines.append(f"    Note: {item.notes}")
+        lines.append("")
+
+    lines.append("=" * 40)
+    lines.append(f"Total Items: {items.count()}")
+
+    response.write('\n'.join(lines))
+    return response
+
+
+@login_required
+@user_passes_test(is_chef)
+def meal_plan_list(request):
+    """List all meal plans"""
+    meal_plans = MealPlan.objects.all()
+    return render(request, 'kitchen/meal_plans/list.html', {'meal_plans': meal_plans})
+
+
+@login_required
+@user_passes_test(is_chef)
+def meal_plan_create(request):
+    """Create new meal plan"""
+    if request.method == 'POST':
+        form = MealPlanForm(request.POST)
+        if form.is_valid():
+            meal_plan = form.save()
+            messages.success(request, 'Meal plan created!')
+            return redirect('kitchen:meal_plan_ingredients', pk=meal_plan.pk)
+    else:
+        form = MealPlanForm()
+    return render(request, 'kitchen/meal_plans/form.html', {'form': form, 'title': 'Add Meal Plan'})
+
+
+@login_required
+@user_passes_test(is_chef)
+def meal_plan_ingredients(request, pk):
+    """Manage ingredients for a meal plan"""
+    meal_plan = get_object_or_404(MealPlan, pk=pk)
+    meal_ingredients = meal_plan.ingredients.all()
+
+    if request.method == 'POST':
+        form = MealIngredientForm(request.POST)
+        if form.is_valid():
+            meal_ing = form.save(commit=False)
+            meal_ing.meal_plan = meal_plan
+            meal_ing.save()
+            messages.success(request, 'Ingredient added to meal plan!')
+            return redirect('kitchen:meal_plan_ingredients', pk=pk)
+    else:
+        form = MealIngredientForm()
+
+    return render(request, 'kitchen/meal_plans/ingredients.html', {
+        'meal_plan': meal_plan,
+        'meal_ingredients': meal_ingredients,
+        'form': form
+    })
+
+@login_required
+@user_passes_test(is_chef)
+def delete_meal_ingredient(request, pk):
+    """Remove an ingredient from a meal plan"""
+    meal_ingredient = get_object_or_404(MealIngredient, pk=pk)
+    meal_plan = meal_ingredient.meal_plan
+
+    if request.method == 'POST':
+        ingredient_name = meal_ingredient.ingredient.name
+        meal_ingredient.delete()
+        messages.success(request, f'{ingredient_name} removed from {meal_plan.name}.')
+
+    return redirect('kitchen:meal_plan_ingredients', pk=meal_plan.pk)
+
+
+@login_required
 @user_passes_test(is_chef)
 def schedule_meal(request):
     """Schedule a meal for a specific date"""

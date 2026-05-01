@@ -159,7 +159,18 @@ def stock_update(request, pk):
             update = form.save(commit=False)
             update.ingredient = ingredient
             update.previous_stock = ingredient.current_stock
-            update.new_stock = ingredient.current_stock + update.quantity_change
+
+            # Handle different update types
+            if update.update_type == StockUpdate.UpdateType.ADJUSTED:
+                # For adjusted, quantity_change IS the new stock level
+                update.new_stock = update.quantity_change
+                update.quantity_change = update.new_stock - update.previous_stock
+            elif update.update_type == StockUpdate.UpdateType.USED:
+                # For used/added, quantity_change is the delta
+                update.new_stock = ingredient.current_stock - update.quantity_change
+            else:  # ADDED
+                update.new_stock = ingredient.current_stock + update.quantity_change
+
             update.created_by = request.user
 
             # Save the update record

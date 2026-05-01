@@ -55,7 +55,7 @@ def update_ingredient_stock(
     update_type,
     quantity_change,
     meal_plan=None,
-    notes=None,
+    notes="",
     created_by=None
 ):
     """

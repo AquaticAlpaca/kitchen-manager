@@ -10,10 +10,13 @@
             font-size: 1.1rem;
             padding-bottom: 80px;
             padding-top: 70px;
+            background-color: #f8f9fa;
         }
         .btn-lg-custom {
             min-height: 50px;
             font-size: 1.2rem;
+            padding: 12px 20px;
+            border-radius: 8px;
         }
         .card-lg {
             min-height: 150px;
@@ -31,13 +34,36 @@
         }
         .card {
             margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
+        .table th, .table td {
+            vertical-align: middle;
+            font-size: 1rem;
+        }
+        /* Mobile specific adjustments */
         @media (max-width: 768px) {
             body {
                 font-size: 1.2rem;
+                padding-top: 60px;
             }
             .btn-lg-custom {
                 font-size: 1.3rem;
+                width: 100%; /* Full width buttons on mobile */
+                margin-bottom: 10px;
+            }
+            .card-body {
+                padding: 1.2rem;
+            }
+            .table-responsive {
+                font-size: 0.95rem;
+            }
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            .form-label {
+                font-weight: bold;
+                margin-bottom: 0.5rem;
             }
         }
     </style>

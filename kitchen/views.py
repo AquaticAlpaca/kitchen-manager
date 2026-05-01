@@ -1,3 +1,4 @@
+import logging
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -11,6 +12,7 @@ from .forms import (
     ShoppingListItemForm, ActiveMealScheduleForm
 )
 
+logger = logging.getLogger(__name__)
 
 def is_chef(user):
     return user.is_authenticated and user.is_chef()
@@ -156,32 +158,37 @@ def stock_update(request, pk):
     if request.method == 'POST':
         form = StockUpdateForm(request.POST)
         if form.is_valid():
-            update = form.save(commit=False)
-            update.ingredient = ingredient
-            update.previous_stock = ingredient.current_stock
+            try:
+                update = form.save(commit=False)
+                update.ingredient = ingredient
+                update.previous_stock = ingredient.current_stock
 
-            # Handle different update types
-            if update.update_type == StockUpdate.UpdateType.ADJUSTED:
-                # For adjusted, quantity_change IS the new stock level
-                update.new_stock = update.quantity_change
-                update.quantity_change = update.new_stock - update.previous_stock
-            elif update.update_type == StockUpdate.UpdateType.USED:
-                # For used/added, quantity_change is the delta
-                update.new_stock = ingredient.current_stock - update.quantity_change
-            else:  # ADDED
-                update.new_stock = ingredient.current_stock + update.quantity_change
+                # Handle different update types
+                if update.update_type == StockUpdate.UpdateType.ADJUSTED:
+                    # For adjusted, quantity_change IS the new stock level
+                    update.new_stock = update.quantity_change
+                    update.quantity_change = update.new_stock - update.previous_stock
+                elif update.update_type == StockUpdate.UpdateType.USED:
+                    # For used/added, quantity_change is the delta
+                    update.new_stock = ingredient.current_stock - update.quantity_change
+                else:  # ADDED
+                    update.new_stock = ingredient.current_stock + update.quantity_change
 
-            update.created_by = request.user
+                update.created_by = request.user
 
-            # Save the update record
-            update.save()
+                # Save the update record
+                update.save()
 
-            # Update the ingredient stock
-            ingredient.current_stock = update.new_stock
-            ingredient.save()
+                # Update the ingredient stock
+                ingredient.current_stock = update.new_stock
+                ingredient.save()
 
-            messages.success(request, f'Stock updated! New amount: {update.new_stock} {ingredient.unit}')
-            return redirect('kitchen:ingredient_list')
+                logger.info(f"Stock updated for {ingredient.name} by {request.user.username}: {update.quantity_change} ({update.get_update_type_display()})")
+                messages.success(request, f'Stock updated! New amount: {update.new_stock} {ingredient.unit}')
+                return redirect('kitchen:ingredient_list')
+            except Exception as e:
+                logger.error(f"Error updating stock for {ingredient.name}: {str(e)}")
+                messages.error(request, "An error occurred while updating stock. Please try again.")
     else:
         form = StockUpdateForm()
 

@@ -24,9 +24,143 @@ from .services import (
 
 logger = logging.getLogger(__name__)
 
-# ... keep existing helper functions (is_chef, is_buyer) ...
+def is_chef(user):
+    return user.is_authenticated and user.is_chef()
 
-# Update stock_update view
+
+def is_buyer(user):
+    return user.is_authenticated and user.is_buyer()
+
+
+def register(request):
+    """Registration view with role selection"""
+    if request.user.is_authenticated:
+        return redirect('kitchen:dashboard')
+
+    if request.method == 'POST':
+        role = request.POST.get('role')
+        if role == User.Role.CHEF:
+            form = ChefRegistrationForm(request.POST)
+        else:
+            form = BuyerRegistrationForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, f'Welcome! You are registered as a {user.get_role_display()}.')
+            return redirect('kitchen:dashboard')
+    else:
+        form = ChefRegistrationForm()
+
+    return render(request, 'registration/register.html', {'form': form})
+
+
+def login_view(request):
+    """Custom login view"""
+    if request.user.is_authenticated:
+        return redirect('kitchen:dashboard')
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            messages.success(request, f'Welcome back, {user.username}!')
+            return redirect('kitchen:dashboard')
+        else:
+            messages.error(request, 'Invalid username or password.')
+
+    return render(request, 'registration/login.html')
+
+
+def logout_view(request):
+    """Logout view"""
+    logout(request)
+    messages.info(request, 'You have been logged out.')
+    return redirect('kitchen:login')
+
+
+@login_required
+def dashboard(request):
+    """Main dashboard - shows different content based on role"""
+    if request.user.is_chef():
+        return chef_dashboard(request)
+    else:
+        return buyer_dashboard(request)
+
+
+@login_required
+@user_passes_test(is_chef)
+def chef_dashboard(request):
+    """Chef-specific dashboard"""
+    low_stock = get_low_stock_ingredients()
+    active_meals = get_upcoming_meals(days=7)[:5]
+
+    context = {
+        'low_stock_count': low_stock.count(),
+        'active_meals': active_meals,
+        'total_ingredients': Ingredient.objects.count(),
+        'low_stock_items': low_stock[:5]  # Show first 5 low stock items
+    }
+    return render(request, 'kitchen/chef_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_buyer)
+def buyer_dashboard(request):
+    """Buyer-specific dashboard"""
+    pending_items = ShoppingListItem.objects.filter(status=ShoppingListItem.Status.PENDING)
+    upcoming_meals = get_upcoming_meals(days=7)[:5]
+
+    context = {
+        'pending_items': pending_items,
+        'upcoming_meals': upcoming_meals,
+        'total_pending': pending_items.count(),
+    }
+    return render(request, 'kitchen/buyer_dashboard.html', context)
+
+
+@login_required
+@user_passes_test(is_chef)
+def ingredient_list(request):
+    """List all ingredients"""
+    ingredients = Ingredient.objects.all()
+    return render(request, 'kitchen/ingredients/list.html', {'ingredients': ingredients})
+
+
+@login_required
+@user_passes_test(is_chef)
+def ingredient_create(request):
+    """Create new ingredient"""
+    if request.method == 'POST':
+        form = IngredientForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ingredient created successfully!')
+            return redirect('kitchen:ingredient_list')
+    else:
+        form = IngredientForm()
+    return render(request, 'kitchen/ingredients/form.html', {'form': form, 'title': 'Add Ingredient'})
+
+
+@login_required
+@user_passes_test(is_chef)
+def ingredient_update(request, pk):
+    """Update ingredient"""
+    ingredient = get_object_or_404(Ingredient, pk=pk)
+    if request.method == 'POST':
+        form = IngredientForm(request.POST, instance=ingredient)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ingredient updated successfully!')
+            return redirect('kitchen:ingredient_list')
+    else:
+        form = IngredientForm(instance=ingredient)
+    return render(request, 'kitchen/ingredients/form.html', {'form': form, 'title': 'Edit Ingredient'})
+
+
 @login_required
 @user_passes_test(is_chef)
 def stock_update(request, pk):
@@ -60,7 +194,89 @@ def stock_update(request, pk):
         'current_stock': ingredient.current_stock
     })
 
-# Update generate_shopping_list view
+
+@login_required
+@user_passes_test(is_buyer)
+def shopping_list(request):
+    """View and manage shopping list"""
+    items = ShoppingListItem.objects.all()
+    return render(request, 'kitchen/shopping_list.html', {'items': items})
+
+
+@login_required
+@user_passes_test(is_buyer)
+def shopping_item_create(request):
+    """Add manual shopping list item"""
+    if request.method == 'POST':
+        form = ShoppingListItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.is_manual = True
+            item.status = ShoppingListItem.Status.PENDING
+            item.save()
+            messages.success(request, 'Item added to shopping list!')
+            return redirect('kitchen:shopping_list')
+    else:
+        form = ShoppingListItemForm()
+    return render(request, 'kitchen/shopping_item_form.html', {'form': form})
+
+
+@login_required
+@user_passes_test(is_buyer)
+def shopping_item_update_status(request, pk):
+    """Update shopping item status"""
+    item = get_object_or_404(ShoppingListItem, pk=pk)
+
+    if request.method == 'POST':
+        status = request.POST.get('status')
+        if status in dict(ShoppingListItem.Status.choices):
+            item.status = status
+            item.save()
+
+            if status == ShoppingListItem.Status.UNAVAILABLE or status == ShoppingListItem.Status.OUT_OF_BUDGET:
+                messages.warning(request, f'{item.name} marked as {item.get_status_display()}')
+            else:
+                messages.success(request, f'{item.name} marked as {item.get_status_display()}')
+
+    return redirect('kitchen:shopping_list')
+
+
+@login_required
+@user_passes_test(is_buyer)
+def shopping_item_delete(request, pk):
+    """Delete shopping list item"""
+    item = get_object_or_404(ShoppingListItem, pk=pk)
+
+    if request.method == 'POST':
+        item_name = item.name
+        item.delete()
+        messages.success(request, f'{item_name} removed from shopping list.')
+
+    return redirect('kitchen:shopping_list')
+
+
+@login_required
+@user_passes_test(is_buyer)
+def bulk_delete_shopping_items(request):
+    """Delete multiple selected shopping list items"""
+    if request.method == 'POST':
+        item_ids = request.POST.getlist('item_ids')
+        deleted_count = 0
+
+        for item_id in item_ids:
+            try:
+                item = ShoppingListItem.objects.get(pk=item_id)
+                item.delete()
+                deleted_count += 1
+            except ShoppingListItem.DoesNotExist:
+                continue
+
+        messages.success(request, f'{deleted_count} item(s) deleted successfully.')
+        return redirect('kitchen:shopping_list')
+
+    return redirect('kitchen:shopping_list')
+
+
 @login_required
 @user_passes_test(is_chef)
 def generate_shopping_list(request):
@@ -82,38 +298,7 @@ def generate_shopping_list(request):
 
     return render(request, 'kitchen/generate_shopping.html')
 
-# Update chef_dashboard view
-@login_required
-@user_passes_test(is_chef)
-def chef_dashboard(request):
-    """Chef-specific dashboard"""
-    low_stock = get_low_stock_ingredients()
-    active_meals = get_upcoming_meals(days=7)[:5]
 
-    context = {
-        'low_stock_count': low_stock.count(),
-        'active_meals': active_meals,
-        'total_ingredients': Ingredient.objects.count(),
-        'low_stock_items': low_stock[:5]  # Show first 5 low stock items
-    }
-    return render(request, 'kitchen/chef_dashboard.html', context)
-
-# Update buyer_dashboard view
-@login_required
-@user_passes_test(is_buyer)
-def buyer_dashboard(request):
-    """Buyer-specific dashboard"""
-    pending_items = ShoppingListItem.objects.filter(status=ShoppingListItem.Status.PENDING)
-    upcoming_meals = get_upcoming_meals(days=7)[:5]
-
-    context = {
-        'pending_items': pending_items,
-        'upcoming_meals': upcoming_meals,
-        'total_pending': pending_items.count(),
-    }
-    return render(request, 'kitchen/buyer_dashboard.html', context)
-
-# Update schedule_meal view
 @login_required
 @user_passes_test(is_chef)
 def schedule_meal(request):

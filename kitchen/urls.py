@@ -30,6 +30,7 @@ urlpatterns = [
     path('shopping-list/<int:pk>/status/', views.shopping_item_update_status, name='shopping_item_update_status'),
     path('shopping-list/<int:pk>/delete/', views.shopping_item_delete, name='shopping_item_delete'),
     path('shopping-list/bulk-delete/', views.bulk_delete_shopping_items, name='bulk_delete_shopping_items'),
+    path('shopping-list/export/', views.export_shopping_list, name='export_shopping_list'),
 
     # Generate Shopping List (Chef)
     path('generate-shopping/', views.generate_shopping_list, name='generate_shopping_list'),

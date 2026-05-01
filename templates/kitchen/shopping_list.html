@@ -5,7 +5,12 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Shopping List</h1>
-    <a href="{% url 'kitchen:shopping_item_create' %}" class="btn btn-primary btn-lg-custom">Add Item</a>
+    <div>
+        <a href="{% url 'kitchen:export_shopping_list' %}" class="btn btn-info btn-lg-custom me-2">
+            📥 Export List
+        </a>
+        <a href="{% url 'kitchen:shopping_item_create' %}" class="btn btn-primary btn-lg-custom">Add Item</a>
+    </div>
 </div>
 
 <div class="card">

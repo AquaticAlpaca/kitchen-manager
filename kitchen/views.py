@@ -4,6 +4,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import F
+from django.http import HttpResponse
 from django.utils import timezone
 from .models import User, Ingredient, MealPlan, ShoppingListItem, ActiveMealSchedule, StockUpdate
 from .forms import (
@@ -359,6 +360,40 @@ def generate_shopping_list(request):
         return redirect('kitchen:shopping_list')
 
     return render(request, 'kitchen/generate_shopping.html')
+
+
+@login_required
+@user_passes_test(is_buyer)
+def export_shopping_list(request):
+    """Export shopping list as a text file"""
+    items = ShoppingListItem.objects.filter(status=ShoppingListItem.Status.PENDING)
+
+    if not items.exists():
+        messages.warning(request, "No pending items to export.")
+        return redirect('kitchen:shopping_list')
+
+    # Create response
+    response = HttpResponse(content_type='text/plain')
+    filename = f"shopping_list_{timezone.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    # Build content
+    lines = ["KITCHEN SHOPPING LIST", "=" * 40, ""]
+    lines.append(f"Generated: {timezone.now().strftime('%Y-%m-%d %H:%M')}")
+    lines.append("")
+
+    for item in items:
+        source = "Manual" if item.is_manual else "Meal Plan"
+        lines.append(f"[ ] {item.quantity_needed} {item.unit} {item.name} ({source})")
+        if item.notes:
+            lines.append(f"    Note: {item.notes}")
+        lines.append("")
+
+    lines.append("=" * 40)
+    lines.append(f"Total Items: {items.count()}")
+
+    response.write('\n'.join(lines))
+    return response
 
 
 @login_required

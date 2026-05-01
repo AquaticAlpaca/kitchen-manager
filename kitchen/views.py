@@ -260,6 +260,30 @@ def shopping_item_delete(request, pk):
 
 
 @login_required
+@user_passes_test(is_buyer)
+def bulk_delete_shopping_items(request):
+    """Delete multiple selected shopping list items"""
+    if request.method == 'POST':
+        item_ids = request.POST.getlist('item_ids')
+        deleted_count = 0
+
+        for item_id in item_ids:
+            try:
+                item = ShoppingListItem.objects.get(pk=item_id, is_buyer=request.user) # Ensure ownership if needed
+                # Actually, since we don't have ownership logic yet, just delete by ID
+                item = ShoppingListItem.objects.get(pk=item_id)
+                item.delete()
+                deleted_count += 1
+            except ShoppingListItem.DoesNotExist:
+                continue
+
+        messages.success(request, f'{deleted_count} item(s) deleted successfully.')
+        return redirect('kitchen:shopping_list')
+
+    return redirect('kitchen:shopping_list')
+
+
+@login_required
 @user_passes_test(is_chef)
 def generate_shopping_list(request):
     """Generate shopping list based on meal plans and low stock"""

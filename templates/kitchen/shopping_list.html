@@ -10,59 +10,98 @@
 
 <div class="card">
     <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Source</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in items %}
-                    <tr class="{% if item.status == 'pending' %}table-warning{% elif item.status == 'purchased' %}table-success{% elif item.status == 'unavailable' or item.status == 'out_of_budget' %}table-danger{% endif %}">
-                        <td><strong>{{ item.name }}</strong></td>
-                        <td>{{ item.quantity_needed }} {{ item.unit }}</td>
-                        <td>
-                            {% if item.is_manual %}
-                            <span class="badge bg-info">Manual</span>
-                            {% else %}
-                            <span class="badge bg-primary">From Meal Plan</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <span class="badge bg-{% if item.status == 'pending' %}warning{% elif item.status == 'purchased' %}success{% else %}danger{% endif %}">
-                                {{ item.get_status_display }}
-                            </span>
-                        </td>
-                        <td>
-                            <form method="post" action="{% url 'kitchen:shopping_item_update_status' item.pk %}" class="d-inline">
-                                {% csrf_token %}
-                                <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
-                                    {% for value, label in item.Status.choices %}
-                                    <option value="{{ value }}" {% if item.status == value %}selected{% endif %}>
-                                        {{ label }}
-                                    </option>
-                                    {% endfor %}
-                                </select>
-                            </form>
-                            <form method="post" action="{% url 'kitchen:shopping_item_delete' item.pk %}" class="d-inline ms-2">
-                                {% csrf_token %}
-                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this item?')">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="text-center">Shopping list is empty. Add items manually or generate from meal plans.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+        <form method="post" action="{% url 'kitchen:bulk_delete_shopping_items' %}">
+            {% csrf_token %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 50px;"><input type="checkbox" id="select-all" class="form-check-input"></th>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Source</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr class="{% if item.status == 'pending' %}table-warning{% elif item.status == 'purchased' %}table-success{% elif item.status == 'unavailable' or item.status == 'out_of_budget' %}table-danger{% endif %}">
+                            <td><input type="checkbox" name="item_ids" value="{{ item.pk }}" class="form-check-input item-checkbox"></td>
+                            <td><strong>{{ item.name }}</strong></td>
+                            <td>{{ item.quantity_needed }} {{ item.unit }}</td>
+                            <td>
+                                {% if item.is_manual %}
+                                <span class="badge bg-info">Manual</span>
+                                {% else %}
+                                <span class="badge bg-primary">From Meal Plan</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if item.status == 'pending' %}warning{% elif item.status == 'purchased' %}success{% else %}danger{% endif %}">
+                                    {{ item.get_status_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <form method="post" action="{% url 'kitchen:shopping_item_update_status' item.pk %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <select name="status" class="form-select form-select-sm d-inline-block w-auto" onchange="this.form.submit()">
+                                        {% for value, label in item.Status.choices %}
+                                        <option value="{{ value }}" {% if item.status == value %}selected{% endif %}>
+                                            {{ label }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                                <form method="post" action="{% url 'kitchen:shopping_item_delete' item.pk %}" class="d-inline ms-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this item?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">Shopping list is empty. Add items manually or generate from meal plans.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if items %}
+            <div class="mt-3">
+                <button type="submit" class="btn btn-danger btn-lg-custom">
+                    Delete Selected (<span id="selected-count">0</span>)
+                </button>
+            </div>
+            {% endif %}
+        </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('select-all');
+    const checkboxes = document.querySelectorAll('.item-checkbox');
+    const countSpan = document.getElementById('selected-count');
+
+    if (selectAll && checkboxes.length > 0) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateCount();
+        });
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', updateCount);
+        });
+
+        function updateCount() {
+            const count = Array.from(checkboxes).filter(cb => cb.checked).length;
+            if (countSpan) countSpan.textContent = count;
+        }
+    }
+});
+</script>
 {% endblock %}

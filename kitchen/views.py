@@ -270,8 +270,6 @@ def bulk_delete_shopping_items(request):
 
         for item_id in item_ids:
             try:
-                item = ShoppingListItem.objects.get(pk=item_id, is_buyer=request.user) # Ensure ownership if needed
-                # Actually, since we don't have ownership logic yet, just delete by ID
                 item = ShoppingListItem.objects.get(pk=item_id)
                 item.delete()
                 deleted_count += 1

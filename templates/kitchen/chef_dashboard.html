@@ -5,6 +5,22 @@
 {% block content %}
 <h1 class="mb-4">Chef Dashboard</h1>
 
+{% if low_stock_count > 0 %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">⚠️ Critical: Low Stock Items</h4>
+            </div>
+            <div class="card-body">
+                <p>You have <strong>{{ low_stock_count }}</strong> ingredient(s) below minimum stock levels.</p>
+                <a href="{% url 'kitchen:ingredient_list' %}" class="btn btn-outline-danger btn-lg-custom">View All Low Stock Items</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <div class="row">
     <div class="col-md-4">
         <div class="card card-lg bg-primary text-white">

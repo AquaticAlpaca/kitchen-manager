@@ -24,7 +24,7 @@
                 </thead>
                 <tbody>
                     {% for ingredient in ingredients %}
-                    <tr>
+                    <tr class="{% if ingredient.needs_reorder %}table-danger{% endif %}">
                         <td><strong>{{ ingredient.name }}</strong></td>
                         <td>{{ ingredient.current_stock }} {{ ingredient.unit }}</td>
                         <td>{{ ingredient.minimum_stock }} {{ ingredient.unit }}</td>

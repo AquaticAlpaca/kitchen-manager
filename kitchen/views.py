@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import F
 from django.utils import timezone
-from .models import User, Ingredient, MealPlan, ShoppingListItem, ActiveMealSchedule
+from .models import User, Ingredient, MealPlan, ShoppingListItem, ActiveMealSchedule, StockUpdate
 from .forms import (
     ChefRegistrationForm, BuyerRegistrationForm, IngredientForm,
     MealPlanForm, MealIngredientForm, StockUpdateForm,

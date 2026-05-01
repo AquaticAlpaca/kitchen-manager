@@ -30,8 +30,8 @@ def calculate_new_stock(ingredient, update_type, quantity_change):
     Returns:
         tuple: (new_stock, actual_change)
     """
-    current = float(ingredient.current_stock)
-    qty = float(quantity_change)
+    current = Decimal(ingredient.current_stock)
+    qty = Decimal(quantity_change)
 
     if update_type == StockUpdate.UpdateType.ADJUSTED:
         # For adjusted, quantity_change IS the new stock level
@@ -161,8 +161,8 @@ def generate_shopping_list_items(scheduled_meals=None):
         for key, data in ingredient_needs.items():
             ingredient = data['ingredient']
             needed = data['quantity']
-            available = float(ingredient.current_stock)
-            min_stock = float(ingredient.minimum_stock)
+            available = Decimal(ingredient.current_stock)
+            min_stock = Decimal(ingredient.minimum_stock)
 
             # Calculate shortage
             shortage = needed + min_stock - available
@@ -196,7 +196,7 @@ def generate_shopping_list_items(scheduled_meals=None):
             if (ingredient.id, ingredient.unit) in ingredient_needs:
                 continue
 
-            shortage = float(ingredient.minimum_stock) - float(ingredient.current_stock)
+            shortage = Decimal(ingredient.minimum_stock) - Decimal(ingredient.current_stock)
             existing = ShoppingListItem.objects.filter(
                 ingredient=ingredient,
                 is_manual=False,

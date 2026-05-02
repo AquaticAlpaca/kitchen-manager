@@ -19,7 +19,7 @@ from .services import (
     generate_shopping_list_items,
     get_low_stock_ingredients,
     get_upcoming_meals,
-    schedule_meal
+    schedule_meal as schedule_meal_service
 )
 
 logger = logging.getLogger(__name__)
@@ -405,7 +405,7 @@ def schedule_meal(request):
             meal_plan = form.cleaned_data['meal_plan']
             scheduled_date = form.cleaned_data['scheduled_date']
 
-            success, schedule, error = schedule_meal(meal_plan, scheduled_date)
+            success, schedule, error = schedule_meal_service(meal_plan, scheduled_date)
 
             if success:
                 messages.success(request, f'{schedule.meal_plan.name} scheduled for {schedule.scheduled_date}!')

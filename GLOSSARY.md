@@ -14,7 +14,7 @@ a term and the glossary, first:
   reached, then
 - Update the glossary to reflect the new understanding
 
-## Words and their definitions
+## Terms and their definitions
 
 Pantry: a digital representation of the contents of the user's physical pantry,
 refrigerator, and freezer. This is the source of truth for the application; the

@@ -1,5 +1,3 @@
-# Create .gitignore file
-cat > .gitignore << 'EOF'
 # Python
 __pycache__/
 *.py[cod]
@@ -10,13 +8,6 @@ venv/
 ENV/
 env/
 .venv/
-
-# Django
-*.log
-local_settings.py
-db.sqlite3
-media/
-staticfiles/
 
 # IDE
 .idea/
@@ -38,3 +29,9 @@ htmlcov/
 .pytest_cache/
 .tox/
 EOF
+
+# Agent
+.cline
+
+# Generic
+secrets/

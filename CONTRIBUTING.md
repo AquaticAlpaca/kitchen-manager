@@ -1,4 +1,4 @@
-# Contributing to [App Name]
+# Contributing to Kitchen Manager
 
 ## Privacy-First Development
 

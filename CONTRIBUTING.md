@@ -37,10 +37,10 @@ test("User cannot view list shared by another user", async () => {
 
 ## Security Practices
 
-    Never commit API keys, passwords, or secrets
-    Use environment variables for all config
-    Run npm audit before committing
-    Update dependencies monthly
+- Never commit API keys, passwords, or secrets
+- Use environment variables for all config
+- Run npm audit before committing
+- Update dependencies monthly
 
 ## Questions?
 

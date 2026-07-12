@@ -18,7 +18,7 @@ CREATE TABLE households (
 
 -- Users: Members of a household
 CREATE TABLE users (
-  id BIGSERIAL PRIMARY KEY,
+  id UUID PRIMARY KEY DEFAULT auth.uid(),
   household_id BIGINT NOT NULL REFERENCES households(id) ON DELETE CASCADE,
   email VARCHAR(255) NOT NULL UNIQUE,
   name VARCHAR(255) NOT NULL,

@@ -22,14 +22,16 @@ application; other features (meal planner, shopping list) modify pantry
 quantities when actions are completed. Pantry items are stored in their
 canonical units.
 
-**See also:** [System Behaviors](#system-behaviors): *Meal preparation, Shopping completion, Stock threshold monitoring*
+**See also:** [System Behaviors](#system-behaviors): _Meal preparation, Shopping
+completion, Stock threshold monitoring_
 
 Shopping list: a digital representation of things the user wants to buy. Items
 may be added to the shopping list manually, or automatically via a planned meal,
 or via a feature that automatically reorders pantry items that are under
 stocked.
 
-**See also:** [System Behaviors](#system-behaviors): *Shopping completion, Stock threshold monitoring*
+**See also:** [System Behaviors](#system-behaviors): _Shopping completion, Stock
+threshold monitoring_
 
 Meal plan: A way for the home cook to plan upcoming meals. Each meal plan
 consists of a meal scheduled for a specific date. When a meal plan is created,
@@ -37,7 +39,7 @@ its ingredients are automatically added to the shopping list. When a meal plan
 is marked as prepared, its ingredients are deducted from the pantry. Users may
 view meal plans on a calendar or in detail.
 
-**See also:** [System Behaviors](#system-behaviors): *Meal preparation*
+**See also:** [System Behaviors](#system-behaviors): _Meal preparation_
 
 Meal: A collection of ingredients which can be stored in the database for later
 use, or can be scheduled via a meal plan.
@@ -54,7 +56,7 @@ user. In the system, each household is identified by a unique `household_id`.
 Data is scoped to households via row-level security (RLS), ensuring users can
 only access their own household's data.
 
-**See also:** [System Behaviors](#system-behaviors): *User authentication*
+**See also:** [System Behaviors](#system-behaviors): _User authentication_
 
 Canonical unit: A way to measure the quantity of each item as it is sold in
 stores. Different items have different canonical units depending on the type of
@@ -95,9 +97,9 @@ Shopping list item source: The origin of a shopping list item. Sources can be:
 Items: The basic unit of data in the app. Items represent a type of grocery or
 household item (e.g., 'flour', 'milk', 'spinach'). Items belong to a household
 and have a canonical unit. Quantities of items are tracked separately in the
-pantry, shopping list, and meal ingredients. All data is scoped to a `household_id`
-and protected by row-level security (RLS). Users can export their household's
-data at any time (user ownership principle).
+pantry, shopping list, and meal ingredients. All data is scoped to a
+`household_id` and protected by row-level security (RLS). Users can export their
+household's data at any time (user ownership principle).
 
 ## System Behaviors
 
@@ -115,8 +117,8 @@ behavior triggers the automatic reorder feature.
 
 Data synchronization: Changes made to pantry items, shopping lists, and meal
 plans are synchronized across devices using Supabase Realtime. The app is
-offline-first, with WatermelonDB + SQLite caching local data for use without
-internet connectivity.
+offline-first, with @tanstack/react-query + SQLite caching local data for use
+without internet connectivity.
 
 User authentication: Users authenticate via Supabase using magic link, biometric
 auth, or passphrase. Upon authentication, users are assigned to a household and

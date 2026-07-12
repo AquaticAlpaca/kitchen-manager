@@ -103,6 +103,29 @@ Name: Supabase Realtime
 
 Purpose: Real-time Sync
 
+Description:
+
+1. Store data locally in SQLite
+
+   Queries happen against local SQLite first (instant, offline) You maintain the
+   schema locally
+
+2. Use @tanstack/react-query to manage Supabase API calls
+
+   Mutations write to Supabase Queries fetch from Supabase and update local
+   SQLite useQuery options: staleTime, cacheTime, background refetching
+
+3. Sync strategy
+
+   When offline: read from SQLite, queue mutations in AsyncStorage When online:
+   flush mutation queue to Supabase, fetch latest data Use Supabase Realtime
+   subscriptions to stay in sync
+
+See examples:
+
+- [Offline storage](examples/frontend/offline.js)
+- [Sync after entwork is restored](examples/frontend/sync.js)
+
 ## 6. Deployment & Infrastructure
 
 Cloud Providers: Vercel or App Store/Play Store
@@ -144,4 +167,4 @@ Repository URL:
 Primary Contact/Team:
 [https://github.com/AquaticAlpaca/](https://github.com/AquaticAlpaca/)
 
-Date of Last Update: 2026-07-11
+Date of Last Update: 2026-07-13

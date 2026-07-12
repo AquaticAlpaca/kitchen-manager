@@ -32,7 +32,12 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
-      ]
+      ],
+      "expo-sqlite",
+      {
+        "enableFTS": true,
+        "useSQLCipher": true
+      }
     ],
     "experiments": {
       "typedRoutes": true,

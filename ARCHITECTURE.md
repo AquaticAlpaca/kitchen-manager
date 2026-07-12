@@ -80,7 +80,7 @@ Deployment: [Expo](https://expo.dev/)
 
 UI Component Library: React Native Paper
 
-Offline-first: WatermelonDB + SQLite
+Offline-first: Tanstack Query + expo-sqlite
 
 ## 4. Data Stores
 
@@ -119,8 +119,8 @@ Authorizations: Shopping list, meal plans, and pantry items are all tied to
 household_id. RLS policies protect each table.
 
 Data Encryption: Supabase encrypts data at rest in the hosted PostgreSQL. HTTPS
-encrypts the data in transit. WatermelonDB encrypts local SQLite; keys never
-leave device
+encrypts the data in transit. Expo-sqlite encrypts local SQLite via SQLCyper;
+keys never leave device
 
 Key Security Tools/Practices: regular security audits
 

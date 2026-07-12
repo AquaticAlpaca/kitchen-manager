@@ -307,13 +307,6 @@ VALUES ('honey',
   (SELECT id FROM cooking_units WHERE name = 'cup'), 
   1, 1.33, 'Approximate');
 
--- Eggs (count)
-INSERT INTO unit_conversions (ingredient_name, canonical_unit_id, cooking_unit_id, canonical_quantity, cooking_quantity, notes)
-VALUES ('eggs', 
-  (SELECT id FROM canonical_units WHERE name = 'count'), 
-  (SELECT id FROM cooking_units WHERE name = 'count'), 
-  1, 1, 'Eggs by count');
-
 -- Common cooking ingredient conversions (Metric)
 
 -- Flour conversions (Metric: kilogram to grams)
@@ -351,14 +344,16 @@ VALUES ('honey',
   (SELECT id FROM cooking_units WHERE name = 'gram'), 
   1, 1000, 'Standard conversion');
 
--- Eggs (count - universal)
+-- Common cooking ingredient conversions (Universal)
+
+-- Eggs (count)
 INSERT INTO unit_conversions (ingredient_name, canonical_unit_id, cooking_unit_id, canonical_quantity, cooking_quantity, notes)
 VALUES ('eggs', 
   (SELECT id FROM canonical_units WHERE name = 'count'), 
   (SELECT id FROM cooking_units WHERE name = 'count'), 
   1, 1, 'Eggs by count');
 
--- Spinach (bunch to bunch - universal)
+-- Spinach (bunch to bunch)
 INSERT INTO unit_conversions (ingredient_name, canonical_unit_id, cooking_unit_id, canonical_quantity, cooking_quantity, notes)
 VALUES ('spinach', 
   (SELECT id FROM canonical_units WHERE name = 'bunch'), 

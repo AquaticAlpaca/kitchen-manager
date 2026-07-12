@@ -27,8 +27,8 @@ or via a feature that automatically reorders pantry items that are under
 stocked.
 
 Meal plan: a way for the home cook to plan upcoming meals. Each meal plan
-consists of a meal and a date. Users may view meal plans on a calender, or in a
-detail view.
+consists of a meal and a date. Users may view meal plans on a calender or in
+detail.
 
 Meal: A collection of ingredients which can be stored in the database for later
 use, or can be scheduled via a meal plan.
@@ -43,13 +43,13 @@ Household: All of the people in a house who make, plan, or shop for food and
 want to track their activities via the app. A household must have at least one
 user.
 
-Canonical units: A way to measure the quantity of each item as it it sold in the
+Canonical unit: A way to measure the quantity of each item as it is sold in the
 store. Different items have different canonical units depending on the type of
 item and the household's unit system.
 
 - Example 1: Flour is sold in pounds (imperial) or grams (metric).
 - Example 2: Milk is sold in gallons (imperial) or liters (metric).
-- Example 3: Eggs are sold in dozens.
+- Example 3: Eggs are sold by count.
 
 Cooking units: A translation of canonical units into the unit used by an
 ingredient in a recipe.
@@ -58,8 +58,11 @@ ingredient in a recipe.
   measured in cups (imperial).
 - Example 2: Milk's canonical unit is gallons (imperial), but for cooking it is
   measured in cups (imperial).
-- Example 3: Eggs canonical units are dozens, but for cooking they are measured
-  in pieces (eg: 2 eggs)
+- Example 3: Eggs canonical units are count and for cooking they are measured in
+  count (eg: 2 eggs)
+
+Household unit system: the system of measurements that a household uses. Choices
+are "imperial" or "metric".
 
 Items: The basic unit of data in the app. Items represent a single grocery or
 household item and its quantity.

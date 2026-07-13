@@ -151,7 +151,7 @@ Key Security Tools/Practices: regular security audits
 
 Local Setup Instructions: [CONTRIBUTING.MD](CONTRIBUTING.md)
 
-Testing Frameworks: Vitest + React Native Testing Library
+Testing Frameworks: Jest + React Native Testing Library
 
 Code Quality Tools: Prettier + Github Code scanning alerts + Depandabot
 

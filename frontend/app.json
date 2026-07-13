@@ -33,11 +33,13 @@
           "imageWidth": 76
         }
       ],
-      "expo-sqlite",
-      {
-        "enableFTS": true,
-        "useSQLCipher": true
-      }
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true,
+          "useSQLCipher": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

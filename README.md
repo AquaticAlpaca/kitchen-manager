@@ -11,6 +11,8 @@ See: /docs for our commitments
 
 ## Javascript Package Management
 
+### npm v12 breaking change
+
 npm v12 will introduce a breaking change; install-time scripts will no longer
 run automatically when packages are added or updated. This will lead to runtime
 errors if a package is updated and fails to run a required install script.
@@ -36,6 +38,10 @@ These steps will provide three benefits:
 See
 https://indragustiprasetya.com/blog/npm-v12-breaking-changes-lock-down-install-scripts.html
 for more details.
+
+### View npm dependencies
+
+Want to see which npm package installed another? Do `npm ls <dependency>`
 
 ## Contribuing
 

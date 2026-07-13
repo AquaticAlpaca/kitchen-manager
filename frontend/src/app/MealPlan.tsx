@@ -8,7 +8,7 @@ export const CustomText = ({ children }: PropsWithChildren) => (
 export default function MealPlan() {
   return (
     <View>
-      <CustomText>MealPlan</CustomText>
+      <CustomText>Meal Plan</CustomText>
     </View>
   );
 }

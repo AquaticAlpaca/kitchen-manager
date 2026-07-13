@@ -4,6 +4,18 @@ This is a living document. When you learn something new about testing (for
 example, after examining the links listed below), update this document to ensure
 that you remember the new knowledge next time.
 
+## Test-driven development (TDD)
+
+All feature additions, changes, and bug fixes must follow the TDD
+red-green-refactor cycle. All tests and linting must pass before a code change
+is considered done.
+
+### Front End
+
+To test, run `npm run testOnce` from the ./frontend directory
+
+To lint, run `npx expo lint` from the ./frontend directory
+
 ## Expo HAS CHANGED
 
 Read the exact versioned docs at https://docs.expo.dev/versions/v57.0.0/ before

@@ -51,6 +51,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
+    "testOnce": "jest",
     "lint": "expo lint"
   },
   "private": true,

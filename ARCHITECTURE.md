@@ -151,9 +151,18 @@ Key Security Tools/Practices: regular security audits
 
 Local Setup Instructions: [CONTRIBUTING.MD](CONTRIBUTING.md)
 
-Testing Frameworks: Jest + React Native Testing Library
+Testing Frameworks:
 
-Code Quality Tools: Prettier + Github Code scanning alerts + Depandabot
+- Unit: Jest + React Native Testing Library
+- Integration: Expo Router
+- E2E: EAS Workflows with Maestro
+
+Code Quality Tools:
+
+- Prettier
+- ESlint
+- Github Code scanning alerts
+- Depandabot
 
 ## 9. Future Considerations / Roadmap
 

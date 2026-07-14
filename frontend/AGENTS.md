@@ -7,12 +7,14 @@ that you remember the new knowledge next time.
 ## Test-driven development (TDD)
 
 All feature additions, changes, and bug fixes must follow the TDD
-red-green-refactor cycle. All tests and linting must pass before a code change
+red-green-refactor cycle. All tests, formatting, and linting must pass before a code change
 is considered done.
 
 ### Front End
 
 To test, run `npm run testOnce` from the ./frontend directory
+
+To check formatting, run `npm run format:check` from the ./frontend directory
 
 To lint, run `npx expo lint` from the ./frontend directory
 

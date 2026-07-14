@@ -42,6 +42,7 @@
     "eslint-plugin-testing-library": "^7.16.2",
     "jest": "~29.7.0",
     "jest-expo": "~57.0.1",
+    "prettier": "^3.9.5",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -52,6 +53,8 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "testOnce": "jest",
+    "format": "prettier --write .",
+    "format:check": "prettier --no-write --list-different .",
     "lint": "expo lint"
   },
   "private": true,

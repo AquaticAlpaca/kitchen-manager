@@ -21,7 +21,7 @@ understanding the overall organization and separation of concerns.
 │   │   ├── models/       # Database models/schemas
 │   │   └── utils/        # Backend utility functions
 │   ├── config/           # Backend configuration files
-│   ├── tests/            # Backend unit and integration tests
+│   ├── __tests__/            # Backend unit and integration tests
 ├── frontend/             # Contains all client-side code for user interfaces
 │   ├── src/              # Main source code for frontend applications
 │   │   ├── components/   # Reusable UI components
@@ -30,7 +30,7 @@ understanding the overall organization and separation of concerns.
 │   │   ├── services/     # Frontend services for API interaction
 │   │   └── store/        # State management (e.g., Redux, Vuex, Context API)
 │   ├── public/           # Publicly accessible assets (e.g., index.html)
-│   ├── tests/            # Frontend unit and E2E tests
+│   ├── __tests__/            # Frontend unit and E2E tests
 │   └── package.json      # Frontend dependencies and scripts
 ├── common/               # Shared code, types, and utilities used by both frontend and backend
 │   ├── types/            # Shared TypeScript/interface definitions
@@ -52,7 +52,7 @@ data flows, how services communicate, and key architectural boundaries.
 Frontend Flow
 
 ```
-[User] → [React Native (Expo)] → [React Query (server state) + WatermelonDB (local state)] → [Supabase Real-time (sync)]
+[User] → [React Native (Expo)] → [React Query (server state) + SQLite] → [Supabase Real-time (sync)]
 ```
 
 Backend Flow

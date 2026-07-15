@@ -13,5 +13,5 @@
   "quoteProps": "as-needed",
   "semi": true,
   "trailingComma": "all",
-  "singleAttributePerLine": false
+  "singleAttributePerLine": true
 }

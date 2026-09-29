@@ -34,5 +34,8 @@ EOF
 # Agent
 .cline
 
+# Django
+*.sqlite3
+
 # Generic
 secrets/

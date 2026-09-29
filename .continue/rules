@@ -1,0 +1,15 @@
+# Project Architecture
+
+This is a Django application with:
+
+- Main project in `/kitchen_management/`
+- Pantry application in `/kitchen_management/pantry`
+- Meal plans application in `/kitchen_management/meal_plans`
+- Shopping list application in `/kitchen_management/shopping_list`
+- Database in `/kitchen_management/db.sqlite`
+
+## Coding Standards
+
+- Use Python for all new files
+- Follow the existing naming conventions
+- Write tests for all new features

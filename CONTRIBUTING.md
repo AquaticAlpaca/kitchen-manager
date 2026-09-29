@@ -39,8 +39,7 @@ test("User cannot view list shared by another user", async () => {
 
 - Never commit API keys, passwords, or secrets
 - Use environment variables for all config
-- Run npm audit before committing
-- Update dependencies monthly
+- Update dependencies monthly, on the first day of coding each month
 
 ## Questions?
 

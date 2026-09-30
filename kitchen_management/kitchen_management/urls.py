@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from pantry import views as pantry_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # Pantry URL - main index page
+    path('', pantry_views.pantry_index, name='pantry-index'),
 ]
